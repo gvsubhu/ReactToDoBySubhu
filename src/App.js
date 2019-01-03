@@ -11,12 +11,15 @@ class App extends Component {
   constructor(props) {
     super();
     this.state = {
-      showAddItem: false
+      showAddItem: false,
+      isUpdate: false
     };
   }
   showAddItems = () => {
     this.setState({
-      showAddItem: !this.state.showAddItem
+      showAddItem: !this.state.showAddItem,
+      isUpdate: false,
+      updateTodoId: ""
     });
     this.itemTxt.value = "";
   };
@@ -30,6 +33,26 @@ class App extends Component {
     });
     this.props.addListItems(this.props.items.length + 1, this.itemTxt.value);
   };
+  updateListItem(id, item) {
+    this.itemTxt.value = item;
+    this.setState({
+      showAddItem: true,
+      isUpdate: true,
+      updateTodoId: id
+    });
+  }
+  editItems = () => {
+    if (this.itemTxt.value === "") {
+      alert("Enter Something to add");
+      return;
+    }
+    this.props.updateListItems(this.state.updateTodoId, this.itemTxt.value);
+    this.setState({
+      showAddItem: false,
+      isUpdate: false,
+      updateTodoId: ""
+    });
+  };
   render() {
     return (
       <div className="App">
@@ -40,7 +63,11 @@ class App extends Component {
             ref={input => (this.itemTxt = input)}
             placeholder="Enter todo item"
           />
-          <input type="button" value="Add Todo" onClick={this.addItems} />
+          <input
+            type="button"
+            value={this.state.isUpdate ? "Update" : "Add Todo"}
+            onClick={this.state.isUpdate ? this.editItems : this.addItems}
+          />
         </div>
         <br />
         <ul>
@@ -50,7 +77,7 @@ class App extends Component {
               <input
                 type="button"
                 value="Edit"
-                onClick={() => this.props.updateListItems(item.id)}
+                onClick={() => this.updateListItem(item.id, item.text)}
               />
               <input
                 type="button"
@@ -82,11 +109,12 @@ const mapDispatchToProps = dispatch => {
         }
       });
     },
-    updateListItems: id => {
+    updateListItems: (id, txt) => {
       dispatch({
         type: UPDATE_ITEM_TO_LIST,
         payload: {
-          id: id
+          id: id,
+          txt: txt
         }
       });
     },

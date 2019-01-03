@@ -18,6 +18,17 @@ function rootReducer(state = initialState, action) {
         })
       });
     }
+    case UPDATE_ITEM_TO_LIST: {
+      debugger;
+      return Object.assign({}, state, {
+        items: state.items.map(function(item) {
+          if (item.id === action.payload.id) {
+            return Object.assign({}, item, { text: action.payload.txt });
+          }
+          return item;
+        })
+      });
+    }
     case REMOVE_ITEM_TO_LIST: {
       return Object.assign({}, state, {
         items: state.items.filter(function(item) {
